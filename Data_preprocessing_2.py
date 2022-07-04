@@ -1,7 +1,7 @@
 from nbformat import write
 import streamlit as st
-import pandas as pd #Пандас
-import numpy as np #Numpy
+import pandas as pd 
+import numpy as np 
 from PIL import Image
 import datetime as dt
 from sklearn.linear_model import LinearRegression
@@ -11,7 +11,7 @@ from sklearn.model_selection import train_test_split
 
 
 st.markdown('''<h1 style='text-align: center; color: black;'
-            >Предварительная обработка данных </h1>''', 
+            >Предварительная обработка данных часть 2: Оценка возможностей </h1>''', 
             unsafe_allow_html=True)
 
 st.write("""
