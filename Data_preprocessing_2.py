@@ -16,9 +16,12 @@ st.markdown('''<h1 style='text-align: center; color: black;'
 
 st.write("""
 Предварительная обработка данных (Data Preprocessing) - важный этап в науке о данных. Для того, чтобы обучать модель, ей необходимо предоставить очищенные данные в понятном ей виде. 
-Предварительная обработка данных, на равне с разведочным анализом данных, обычно занимает большую часть проекта. В этом стримлите мы попробуем обработать одни и те же данные 2 разными способами и обучить одну модель.
-Посмотрим, как наша предобработка повлияет на предсказания.
+Предварительная обработка данных, на равне с разведочным анализом данных, обычно занимает большую часть проекта.
 \n **Полезно почитать:** [1](https://ru.wikipedia.org/wiki/Предварительная_обработка_данных), [2](https://habr.com/ru/post/511132/), [3](https://pythobyte.com/data-preprocessing-0cb9135c/)
+
+\nЛабораторная работа "Предварительная обработка данных" состоит из 2 частей:
+\n**Первая часть:** посмотрим, какие есть способы и возможности обработки данных.
+\n**Вторая часть:** обработаем одни и те же данные двумя разными способами, обучим модель и сравним результаты (**[ссылка](https://darealmumba-ranepa-data-preprocessing-data-preprocessing-2knprb.streamlitapp.com/)**). 
 """)
 #-------------------------О проекте-------------------------
 
@@ -63,7 +66,7 @@ col_expander.markdown("""
 
 df = pd.read_csv('ny_taxi.csv')
 
-st.subheader('Посмотрим на данные')
+st.subheader('Анализ данных')
 
 if st.checkbox('Показать Датасет'):
   number = st.number_input('Сколько строк показать', min_value=1, max_value=df.shape[1])
@@ -96,6 +99,17 @@ if st.checkbox('Типы данных'):
   ''')
 
   st.write(pd.DataFrame(df.dtypes.astype('str'), columns=['тип данных']))
+
+if st.checkbox('Описательная статистика по всем числовым колонкам'):
+  describe_expander_ = st.expander('Информация о данных, которые входят в описательную статистику')
+  describe_expander_.info('''Count - сколько всего было записей 
+  \nMean - средняя велечина 
+  \nStd - стандартное отклонение
+  \nMin - минимальное значение
+  \n25%/50%/70% - перцентили (показывают значение, ниже которого падает определенный процент наблюдений. Например, если число 5 - это 25% перцентиль, значит в наших данных 25% значений ниже 5)
+  \nMax - максимальное значение
+  ''')
+  st.dataframe(df.describe())
 
 
 non_val = st.checkbox('Пропущенные значения')
@@ -199,6 +213,82 @@ if step_five:
   Возможно, если мы по другому обработаем данные, у нас получится минимизировать нашу ошибку и делать более точные предсказания.
   """)
 
+
+#-------------------Student try---------------------------
+
+df_2 = pd.read_csv('ny_taxi.csv')
+
+st.subheader('Выбор студента')
+
+st.write("""
+Попробуйте выбрать способы предобработки данных и посмотрите на получившийся результат:
+""")
+get_target = st.checkbox('Изменить тип данных и получить таргетную переменную')
+drop_trip = st.multiselect('Удалить столбцы "начало_поездки" и "конец_поездки"?', ['Да', 'Нет'])
+save_info = st.multiselect('Удалим или переведем в бинарный признак столбец "информация_сохранена"?', ['Удалить', 'Перевести в бинарный признак'])
+new_idx = st.multiselect('Зададим новый индекс?', ['Да','Нет'])
+company_id = st.multiselect('Перевести в бинарный признак столбец "id_компании', ['Да','Нет'])
+get_distance = st.multiselect('Получить новую переменную "расстояние"?', ['Да','Нет'])
+drop_long_lat = st.multiselect('Удалить столбцы с долготой и шириной?',['Да','Нет'])
+
+# if not get_target or not drop_trip or not save_info or not new_idx or not company_id or not get_distance or not drop_long_lat:
+#   st.write('*Выбраны не все варианты предобработки*')
+# else:
+# df_2['начало_поездки'] = pd.to_datetime(df_2['начало_поездки'])
+# df_2['конец_поездки'] = pd.to_datetime(df_2['конец_поездки'])
+# df_2['длительность_поездки'] = df_2['конец_поездки'] - df_2['начало_поездки']
+# df_2['длительность_поездки'] = df_2['длительность_поездки'].dt.total_seconds().div(60).astype(int) #длительность поездки в минутах
+
+# show_df = st.checkbox('Показать результат предобратоки')
+# if show_df:
+#   if drop_trip =='Да':
+
+#     df_2.drop(['начало_поездки', 'конец_поездки'], axis=1)
+#   if save_info == 'Удалить':  
+#     df_2.drop('информация_сохранена', axis=1)
+#   else: 
+#     df_2.информация_сохранена[df_2.информация_сохранена == 'N'] = 0
+#     df_2.информация_сохранена[df_2.информация_сохранена == 'Y'] = 1
+
+#   if new_idx == 'Да':
+#     df_2 = df_2.set_index('id')
+#   if company_id == 'Да':
+#     df_2['id_компании'] = df_2['id_компании'] - 1
+#   if get_distance == 'Да':
+#     latMultiplier  = 111.32
+#     longMultiplier = np.cos(df_2['широта_окончания']*(np.pi/180.0)) * 111.32
+#     lat = (latMultiplier  * (df_2['широта_окончания'] - df_2['широта_начала'])) **2
+#     long = (longMultiplier * (df_2['долгота_окончания'] - df_2['долгота_начала'])) **2
+#     distance = (lat + long) ** 0.5
+#     df_2['расстояние_км'] = distance
+#   if drop_long_lat == 'Да':
+#     df_2 = df_2.drop(['широта_начала', 'широта_окончания','долгота_начала', 'долгота_окончания'], axis=1)
+#   st.write(df_2.head())
+
+# # show_df = st.checkbox('Показать результат предобратоки')
+# # if show_df:
+# #   st.write(df_2.head())
+
+# get_preds = st.checkbox('Обучаем модель')
+# if get_preds:
+
+#   X_2 = df_2.drop('расстояние_км', axis=1)
+#   y_2 = df_2['расстояние_км']
+#   test_indexes = X_test.index
+#   train_indexes = X_train.index
+
+#   X_train_2 = X_2[X_2.index.isin(train_indexes)]
+#   y_train_2 = y_2[y_2.index.isin(train_indexes)]
+
+#   X_test_2 = X_2[X_2.index.isin(test_indexes)]
+#   y_test_2 = y_2[y_2.index.isin(test_indexes)]
+
+#   model_2 = LinearRegression()
+#   model_2.fit(X_train_2, y_train_2)
+#   losses_2 = mean_absolute_error(y_test_2,model_2.predict(X_test_2))
+#   st.write('Функция ошибки:', round(losses_2,2))
+
+
 #-------------------Preprocessing: Second_try-----------------
 
 st.subheader('Предобработка данных: 2 вариант')
@@ -259,7 +349,7 @@ if step_eight:
     lat = (latMultiplier  * (df_2['широта_окончания'] - df_2['широта_начала'])) **2
     long = (longMultiplier * (df_2['долгота_окончания'] - df_2['долгота_начала'])) **2
     distance = (lat + long) ** 0.5
-    df_2['расстояние_км'] = distance
+    df_2['расстояние_км'] = round(distance,3)
     #st.write(df_2.head())
     # df_dis = pd.DataFrame(distance)
     # st.write(df_dis)
