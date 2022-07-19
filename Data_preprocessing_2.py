@@ -33,13 +33,13 @@ expander_bar.markdown(
     """
 \nЗелёным обозначены этапы, корректировка которых доступна студенту, красным - этапы, которые предобработаны и скорректированы сотрудником лаборатории.
 \n**1. Сбор данных:** был использован датасет из соревнований на платформе kaggle ([ссылка](https://www.kaggle.com/competitions/nyc-taxi-trip-duration/overview))
-\n**2. Предобработка данных:** изменения типов данных, создание новых столбцов (feature engineering), замена категориальных переменных на бинарные, отсечение ненужных признаков (feature selection).
+\n**2. Предобработка данных:** изменения типов данных, создание новых столбцов (feature engineering), кодировка категориальных переменных, отсечение ненужных признаков (feature selection).
 \n**3. Обучение и валидация модели**
 \n**4. Сравнение результатов** 
 \n**5. Выводы:** подведение итогов и краткое описание проделанной работы, ссылки на другие методы предобработки данных.
 \n**6. Создание веб-приложения Streamlit:** оформление и выгрузка на сервер
 \n**Используемые библиотеки:** [streamlit](https://docs.streamlit.io/library/get-started), [pandas](https://pandas.pydata.org/docs/user_guide/index.html), [sklearn](https://matplotlib.org/stable/api/index.html), 
-[numpy](https://numpy.org/doc/stable/), [PIL](https://pillow.readthedocs.io/en/stable/), [datetime]
+[numpy](https://numpy.org/doc/stable/), [pillow](https://pillow.readthedocs.io/en/stable/)
 """)
 
 df_expander = st.expander("Информация о датасете:")
@@ -80,7 +80,7 @@ if st.checkbox('Размер Датасета'):
   if shape == 'Строки':
     st.write('Количество строк:', df.shape[0])
   elif shape == 'Колонки':
-    st.write('Количество колонок:', df.shape[1])
+    st.write('Количество столбцов:', df.shape[1])
 
 if st.checkbox('Уникальные значения переменной'):
   cols = st.multiselect('Выбрать колонку', 
@@ -119,13 +119,13 @@ if non_val:
 #-----------------Preprocessing: first try---------------
 
 st.subheader('Предобработка данных: 1 вариант')
-st.write('Сейчас мы попробуем сделать некоторые преобразования и обучим нашу первую модель')
+st.write('Попробуем сделать предобработку и обучим нашу первую модель')
 
-step_one = st.checkbox('Шаг 1')
+step_one = st.checkbox('Шаг первый')
 if step_one:
   st.write("""
   Для начала добавим нашу целевую переменную (ее еще называют таргетом), по которой будем делать вычисления. Напомню, что наша целевая переменная - время поездки. Чтобы его получить, нам нужно вычесть время начала поездки и о ее окончания.
-  Но прежде, чем это сделать, давайте посмотрим, какой тип данных у этих колонок. Мы видим "object". Чтобы нам было удобней работать, поменяем тип данных этих колонок на datetime. 
+  Но прежде, чем это сделать, давайте посмотрим, какой тип данных у этих столбцов. Мы видим "object". Чтобы нам было удобней работать, поменяем тип данных этих столбцов на datetime. 
   """)
   type_expander = st.expander('Зачем мы меняем тип данных?')
   type_expander.markdown("""
@@ -151,14 +151,14 @@ if step_one:
       st.write('Чтобы не выводить все 1,5 миллиона значений посмотрим на первые 20')
       st.write(df['длительность_поездки'].head(20))
 
-step_two = st.checkbox('Шаг 2')
+step_two = st.checkbox('Шаг второй')
 if step_two:
   st.write("""
-Отлично, мы получили нашу целевую переменную. Теперь можно избавится от колонок начало и конец поездки, так как эта информация есть в нашем таргете (если мы их оставим, то можем столкнуться с проблемой **[мультиколлениарноти](http://www.machinelearning.ru/wiki/index.php?title=Мультиколлинеарность)**). 
-Также имеет смысл избавиться от колонки "информация_сохранена". Делаем мы это потому, что машина понимает язык чисел, но не букв.
+Отлично, мы получили нашу целевую переменную. Теперь можно избавиться от столбцов начало и конец поездки, так как эта информация есть в нашем таргете (если мы их оставим, то можем столкнуться с проблемой **[мультиколлениарноcти](http://www.machinelearning.ru/wiki/index.php?title=Мультиколлинеарность)**). 
+\n Обратите внимание на столбец "информация_сохранена" - это категориальная переменная. Мы можем ее закодировать, а можем удалить. Давайте попробуем удалить.
 \n Мы можем сделать еще одно маленькое преобразование: у нас есть индексы и колонка id. По сути, это одно и то же, так как у каждой поездки уникальный id. Давайте сделаем так, чтобы колонка id стала нашим индексом.
 """)    
-  drop_time = st.checkbox('Удалить ненужные колонки')
+  drop_time = st.checkbox('Удалить ненужные столбцы')
   if drop_time:
     df = df.drop(['начало_поездки', 'конец_поездки', 'информация_сохранена'], axis=1)
 
@@ -167,10 +167,10 @@ if step_two:
     df = df.set_index('id')
     st.write(df.head())  
 
-step_three = st.checkbox('Шаг 3')
+step_three = st.checkbox('Шаг третий')
 if step_three:
   st.write("""
-  Прежде, чем начать обучние, нам нужно разделить наши данные на тренировочную часть и тестовую (в пропорции 80/20). Делить будем с помощью встроенного метода train_test_split из библиотеки sklearn 
+  Прежде, чем начать обучние, нам нужно разделить наши данные на тренировочную часть и тестовую (разделим в пропорции 80/20). Делить будем с помощью встроенного метода train_test_split из библиотеки sklearn 
   """)
   training_info = st.expander('Зачем мы делим наши данные?')
   training_info.markdown("""
@@ -188,7 +188,7 @@ if step_three:
     st.write("Размер тренировочного датасета:", X_train.shape, 
     "Размер тестового датасета:" , X_test.shape)
     #st.write("обратите внимание, что у нас теперь всего 6 колонок в ", X_test.head())
-step_four = st.checkbox('Шаг 4')
+step_four = st.checkbox('Шаг четвертый')
 if step_four:
   st.write("""
   Теперь мы можем обучить нашу модель и оценить ее производительность, посчитав метрику. Обучать мы будем с помощью обычной линейной регрессии. Метрика - MAE
@@ -214,7 +214,7 @@ if step_four:
     losses = mean_absolute_error(y_test,model_1.predict(X_test))
     st.write('Функция ошибки:', round(losses,2))
     explanation = st.expander('Как это можно трактовать?')
-    explanation.markdown('Наша функция ошибки составила 10.17. Это значит, что наша модель в среднем ошибается на 10 минут по сравнению с реальными значениями')
+    explanation.markdown('Наша функция ошибки составила 10.17. MAE довольно удобная метрика, так как она считает абсолютные значения. Следовательно, можно сказать, что наша модель в среднем ошибается на 10 минут по сравнению с реальными значениями')
 step_five = st.checkbox('Промежуточные выводы')
 if step_five:
   st.write("""
@@ -225,79 +225,108 @@ if step_five:
 
 #-------------------Student try---------------------------
 
-# df_2 = pd.read_csv('ny_taxi.csv')
+df_2 = pd.read_csv('ny_taxi.csv')
 
 st.subheader('Выбор студента')
 
 st.write("""
 Теперь попробуйте сами выбрать способы предобработки данных, обучите модель и посмотрите на результат. Таргет нам в любом случае надо получить, чтобы мы могли делать предсказание, поэтому оставим этот пункт без изменений.
 """)
-# get_target = st.checkbox('Изменить тип данных и получить таргетную переменную')
-# drop_trip = st.multiselect('Удалить столбцы "начало_поездки" и "конец_поездки"?', ['Да', 'Нет'])
-# save_info = st.multiselect('Удалим или закодируем данные в столбце "информация_сохранена"?', ['Удалить', 'Закодировать'])
-# new_idx = st.multiselect('Зададим новый индекс?', ['Да','Нет'])
-# company_id = st.multiselect('Перевести в бинарный признак столбец "id_компании', ['Да','Нет'])
-# get_distance = st.multiselect('Получить новую переменную "расстояние"?', ['Да','Нет'])
-# drop_long_lat = st.multiselect('Удалить столбцы с долготой и шириной?',['Да','Нет'])
+get_target = st.checkbox('Изменить тип данных и получить таргетную переменную')
+drop_trip = st.multiselect('Удалить столбцы "начало_поездки" и "конец_поездки"?', ['Да', 'Нет'])
+save_info = st.multiselect('Удалим или закодируем данные в столбце "информация_сохранена"?', ['Удалить', 'Закодировать'])
+new_idx = st.multiselect('Зададим новый индекс?', ['Да','Нет'])
+company_id = st.multiselect('Перевести в бинарный признак столбец "id_компании', ['Да','Нет'])
+get_distance = st.multiselect('Получить новую переменную "расстояние"?', ['Да','Нет'])
+drop_long_lat = st.multiselect('Удалить столбцы с долготой и шириной?',['Да','Нет'])
 
-# if not get_target or not drop_trip or not save_info or not new_idx or not company_id or not get_distance or not drop_long_lat:
-#   st.write('*Выбраны не все варианты предобработки*')
-# else:
-#   df_2['начало_поездки'] = pd.to_datetime(df_2['начало_поездки'])
-#   df_2['конец_поездки'] = pd.to_datetime(df_2['конец_поездки'])
-#   df_2['длительность_поездки'] = df_2['конец_поездки'] - df_2['начало_поездки']
-#   df_2['длительность_поездки'] = df_2['длительность_поездки'].dt.total_seconds().div(60).astype(int)
+if not get_target or not drop_trip or not save_info or not new_idx or not company_id or not get_distance or not drop_long_lat:
+  st.write('*Выбраны не все варианты предобработки*')
+else:
+  df_2['начало_поездки'] = pd.to_datetime(df_2['начало_поездки'])
+  df_2['конец_поездки'] = pd.to_datetime(df_2['конец_поездки'])
+  df_2['длительность_поездки'] = df_2['конец_поездки'] - df_2['начало_поездки']
+  df_2['длительность_поездки'] = df_2['длительность_поездки'].dt.total_seconds().div(60).astype(int)
+
+show_df = st.checkbox('Показать результат предобратоки')
+st.write(show_df)
+if show_df:
+  if drop_trip[0] =='Да':
+    df_2 = df_2.drop(['начало_поездки', 'конец_поездки'], axis=1)
+  else:        #нельзя запустить обучение линейной регрессии, если есть тип данных datetime64. Поэтому, если студент решит оставить столбцы начало и конец поездки, нам нужно перевести их в другой формат. 
+    df_2['начало_поездки'] = df_2['начало_поездки'].map(dt.datetime.toordinal)  
+    df_2['конец_поездки'] = df_2['конец_поездки'].map(dt.datetime.toordinal)
+
+  if save_info[0] == 'Удалить':  
+    df_2 = df_2.drop('информация_сохранена', axis=1)
+  else: 
+    df_2.информация_сохранена = df_2.информация_сохранена.map(dict(Y=1, N=0))
+
+  if new_idx[0] == 'Да':
+    df_2 = df_2.set_index('id')
+
+  if company_id[0] == 'Да':
+    df_2['id_компании'] = df_2['id_компании'] - 1
+
+  if get_distance[0] == 'Да':
+    latMultiplier  = 111.32
+    longMultiplier = np.cos(df_2['широта_окончания']*(np.pi/180.0)) * 111.32
+    lat = (latMultiplier  * (df_2['широта_окончания'] - df_2['широта_начала'])) **2
+    long = (longMultiplier * (df_2['долгота_окончания'] - df_2['долгота_начала'])) **2
+    distance = (lat + long) ** 0.5
+    df_2['расстояние_км'] = round(distance,3)
+
+  if drop_long_lat[0] == 'Да':
+    df_2 = df_2.drop(['широта_начала', 'широта_окончания','долгота_начала', 'долгота_окончания'], axis=1)
+
+  st.write(df_2.head())
+  st.write(df_2.shape)
+  # st.write(pd.DataFrame(df_2.dtypes.astype('str'), columns=['тип данных']))
+  # st.write(df_2['начало_поездки'].dtypes)
 
 # show_df = st.checkbox('Показать результат предобратоки')
 # if show_df:
-#   if drop_trip =='Да':
-#     df_2 = df_2.drop(['начало_поездки', 'конец_поездки'], axis=1)
-
-#   if save_info == 'Удалить':  
-#     df_2 = df_2.drop('информация_сохранена', axis=1)
-#   else: 
-#     df_2.информация_сохранена[df_2.информация_сохранена == 'N'] = 0
-#     df_2.информация_сохранена[df_2.информация_сохранена == 'Y'] = 1
-
-#   if new_idx == 'Да':
-#     df_2 = df_2.set_index('id')
-
-#   if company_id == 'Да':
-#     df_2['id_компании'] = df_2['id_компании'] - 1
-
-#   if get_distance == 'Да':
-#     latMultiplier  = 111.32
-#     longMultiplier = np.cos(df_2['широта_окончания']*(np.pi/180.0)) * 111.32
-#     lat = (latMultiplier  * (df_2['широта_окончания'] - df_2['широта_начала'])) **2
-#     long = (longMultiplier * (df_2['долгота_окончания'] - df_2['долгота_начала'])) **2
-#     distance = (lat + long) ** 0.5
-#     df_2['расстояние_км'] = distance
-#   if drop_long_lat == 'Да':
-#     df_2 = df_2.drop(['широта_начала', 'широта_окончания','долгота_начала', 'долгота_окончания'], axis=1)
 #   st.write(df_2.head())
 
-# # show_df = st.checkbox('Показать результат предобратоки')
-# # if show_df:
-# #   st.write(df_2.head())
+get_preds = st.checkbox('Обучаем модель')
+if get_preds:
 
-# get_preds = st.checkbox('Обучаем модель')
-# if get_preds:
+  X_2 = df_2.drop('длительность_поездки', axis=1)
+  y_2 = df_2['длительность_поездки']
 
-#   X_2 = df_2.drop('длительность_поездки', axis=1)
-#   y_2 = df_2['длительность_поездки']
-#   test_indexes = X_test.index
-#   train_indexes = X_train.index
+  # X_train_2, X_test_2, y_train_2, y_test_2 = train_test_split(X_2, y_2, 
+  #                                                 test_size=0.2, 
+  #                                                 random_state=42)
 
-#   X_train_2 = X_2[X_2.index.isin(train_indexes)]
-#   y_train_2 = y_2[y_2.index.isin(train_indexes)]
+  test_indexes = X_test.index
+  train_indexes = X_train.index
 
-#   X_test_2 = X_2[X_2.index.isin(test_indexes)]
-#   y_test_2 = y_2[y_2.index.isin(test_indexes)]
+  X_train_2 = X_2[X_2.index.isin(train_indexes)]
+  y_train_2 = y_2[y_2.index.isin(train_indexes)]
 
-#   model_2 = LinearRegression()
-#   model_2.fit(X_train_2, y_train_2)
-#   losses_2 = mean_absolute_error(y_test_2,model_2.predict(X_test_2))
-#   st.write('Функция ошибки:', round(losses_2,2))
+  X_test_2 = X_2[X_2.index.isin(test_indexes)]
+  y_test_2 = y_2[y_2.index.isin(test_indexes)]
+
+  # st.write(X_2)
+  # st.write(y_2)
+  
+  # st.write(test_indexes)
+  # st.write(train_indexes)
+
+  # st.write('Размер Х теста', X_test_2.shape)
+  # st.dataframe(X_train_2.info()) 
+  #type(y_train_2))
+  # st.dataframe(pd.DataFrame(X_train_2.dtypes.astype('str'), columns=['тип данных']))
+  #st.write(df_2.dtypes())
+  # st.write("Размер У теста", y_test_2.shape)
+  # st.write("Размер У трейна", y_train_2.shape)
+
+  model_2 = LinearRegression()
+  model_2.fit(X_train_2, y_train_2)
+  losses_2 = mean_absolute_error(y_test_2,model_2.predict(X_test_2))
+  st.write('Функция ошибки:', round(losses_2,2))
+
+
 
 
 #-------------------Preprocessing: Second_try-----------------
@@ -371,6 +400,7 @@ if step_eight:
     if drop_coords:
       df_3 = df_3.drop(['широта_начала', 'широта_окончания','долгота_начала', 'долгота_окончания'], axis=1)
       st.write(df_3.head())
+      st.write(df_3.shape)
 
 step_nine = st.checkbox('Шаг четвертый')
 if step_nine:
@@ -379,14 +409,21 @@ if step_nine:
   """)
   X_3 = df_3.drop('длительность_поездки', axis=1)
   y_3 = df_3['длительность_поездки']
-  test_indexes = X_test.index
-  train_indexes = X_train.index
+  test_indexes_2 = X_test.index
+  train_indexes_2 = X_train.index
 
-  X_train_3 = X_3[X_3.index.isin(train_indexes)]
-  y_train_3 = y_3[y_3.index.isin(train_indexes)]
+  X_train_3 = X_3[X_3.index.isin(train_indexes_2)]
+  y_train_3 = y_3[y_3.index.isin(train_indexes_2)]
 
-  X_test_3 = X_3[X_3.index.isin(test_indexes)]
-  y_test_3 = y_3[y_3.index.isin(test_indexes)]
+  X_test_3 = X_3[X_3.index.isin(test_indexes_2)]
+  y_test_3 = y_3[y_3.index.isin(test_indexes_2)]
+
+  st.write(test_indexes_2)
+  st.write(train_indexes_2)
+  st.write('X train', X_train_3.shape)
+  st.write('X test',X_test_3.shape)
+  st.write('Y train', y_train_3.shape)
+  st.write('Y test', y_test_3.shape)
 
   model_3 = LinearRegression()
   model_3.fit(X_train_3, y_train_3)
