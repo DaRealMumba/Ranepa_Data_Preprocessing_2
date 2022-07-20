@@ -64,7 +64,7 @@ col_expander.markdown("""
 \n**информация_сохранена** - Yes/No: Была ли информация сохранена в памяти транспортного средства из-за потери соединения с сервером
 """)
 
-df = pd.read_csv('ny_taxi.csv')
+df = pd.read_csv('taxi_short.csv')
 
 st.subheader('Анализ данных')
 
@@ -225,7 +225,7 @@ if step_five:
 
 #-------------------Student try---------------------------
 
-df_2 = pd.read_csv('ny_taxi.csv')
+df_2 = pd.read_csv('taxi_short.csv')
 
 st.subheader('Выбор студента')
 
@@ -356,7 +356,7 @@ termin.markdown("""
 участвовавших в процессе обучения, но и для любых новых, которые не участвовали в нем.
 """)
 
-df_3 = pd.read_csv('ny_taxi.csv')
+df_3 = pd.read_csv('taxi_short.csv')
 
 step_six = st.checkbox('Шаг первый ')
 if step_six:
