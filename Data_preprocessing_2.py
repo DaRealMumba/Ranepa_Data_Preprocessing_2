@@ -1,5 +1,5 @@
 # импортируем библиотеки
-# from tkinter import Button
+from tkinter import Button
 from matplotlib import image
 from nbformat import write
 import streamlit as st
