@@ -270,8 +270,8 @@ if step_five:
     #st.write('Ранг матрицы:', np.linalg.matrix_rank(df.corr())) 
     st.write('Определитель:', np.linalg.det(df_1.corr()))
     
-    st.write('Метрика на тренировочных данных:', round(train_losses,2))
-    st.write('Метрика на тестовых данных:', round(test_losses,2))
+    st.write('Показатель метрики на тренировочных данных (в секундах):', round(train_losses,2))
+    st.write('Показатель метрики на тестовых данных (в секундах):', round(test_losses,2))
     
 
     explanation = st.expander('Как это можно трактовать?')
@@ -377,7 +377,7 @@ with st.form(key='student_choice'):
       df_2 = df_2.drop(['широта_начала', 'широта_окончания','долгота_начала', 'долгота_окончания'], axis=1)
 
     st.write(df_2.head())
-    st.write(df_2.shape)
+    # st.write(df_2.shape)
 
     fig, ax = plt.subplots(1, 1, figsize=(15, 10)) 
     ax = sns.heatmap(df_2.corr().abs(), 
@@ -402,8 +402,8 @@ with st.form(key='student_choice'):
     model.fit(X_train_2, y_train_2)
     train_losses_2 = mean_absolute_error(y_train_2, model.predict(X_train_2))
     test_losses_2 = mean_absolute_error(y_test_2,model.predict(X_test_2))
-    st.write('Метрика на тренировочных данных:', round(train_losses_2,2))
-    st.write('Метрика на тестовых данных:', round(test_losses_2,2))
+    st.write('Показатель метрики на тренировочных данных (в секундах):', round(train_losses_2,2))
+    st.write('Показатель метрики на тестовых данных (в секундах):', round(test_losses_2,2))
 
     get_results = st.expander('Интерпретация результатов')
     get_results.markdown("""
@@ -546,8 +546,8 @@ if step_ten:
     #st.write('Ранг матрицы:', np.linalg.matrix_rank(df_3.corr())) 
     st.write('Определитель:', np.linalg.det(df_3.corr()))
 
-    st.write('Функция ошибки на тренировочных данных:', round(train_losses_3,2))
-    st.write('Функция ошибки на тестовых данных:', round(train_losses_3,2))
+    st.write('Показатель метрики на тренировочных данных (в секундах):', round(train_losses_3,2))
+    st.write('Показатель метрики на тестовых данных (в секундах):', round(train_losses_3,2))
 
 
 st.subheader('Подведем итоги')
