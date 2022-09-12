@@ -8,6 +8,8 @@ import numpy as np
 import datetime as dt
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
+from PIL import Image
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
@@ -15,11 +17,12 @@ from sklearn.model_selection import train_test_split
 
 # Заголовок
 
+
 st.markdown('''<h1 style='text-align: center; color: black;'
             >Влияние обработки данных на точность прогноза </h1>''', 
             unsafe_allow_html=True)
 
-st.image(image='images/preprocessing.png', use_column_width='auto')
+st.image(image='../images/preprocessing.png', use_column_width='auto')
 
 st.write("""
 Предварительная обработка важный этап в машинном обучении. Для того, чтобы обучать модель, ей необходимо предоставить очищенные данные в понятном виде. Ни одну модель не обучают на данных, которые до этого 
@@ -44,7 +47,7 @@ st.write("""
 
 st.header('Этапы разработки лабораторной работы', anchor='pipeline') 
 
-st.image(image='images/Pipeline_2.png', use_column_width='auto', caption='Схема (пайплайн) лабораторной работы')
+st.image(image='../images/Pipeline_2.png', use_column_width='auto', caption='Схема (пайплайн) лабораторной работы')
 
 expander_bar = st.expander("Описание пайплана стримлита:")
 expander_bar.markdown(
@@ -181,7 +184,7 @@ if step_two:
   Скорее всего, вы не получите просто цифру 0, когда будете делать вычисления определителя матрицы, но получите [экспоненциальную запись числа](https://allcalc.ru/node/1103), как на фото ниже. Это и будет подтверждением наличия мультиколлиниарности.
   """)
  
-  st.image('images/scientific_notation.png', use_column_width=True)
+  st.image('../images/scientific_notation.png', use_column_width=True)
   st.write("""
   \nЕсть несколько вариантов предобработки. Мы можем просто удалить эти данные, можем изменить тип данных на int64 и оставить (не лучший вариант из-за возможной мультиколлиниарности), а можем вытащить дополнительную информация, например, месяц, день недели и время поездки (datetime дает нам такую возможность), а затем уже удалить столбцы начало и конец поездки.
   Давайте попробуем первый вариант и просто удалим их.
@@ -238,7 +241,7 @@ if step_five:
   Затем эта разница считается по метрике: берутся все значения разниц, суммируются друг с другом, а затем мы делим это число на количество наблюдений (на фото их 6).
    """)
 
-  st.image('images/lin_reg.png', use_column_width=True)
+  st.image('../images/lin_reg.png', use_column_width=True)
 
   mae = st.expander('Что за метрика MAE?')
   mae.markdown("""
@@ -479,7 +482,7 @@ if step_nine:
   На графике слева у нас нет выбросов и алгоритм линейной регрессии смог построить хорошую линию. На графике справа - те же самые данные, но с 3 выбросами. Наш алгоритм теперь учитывает и эти экстремальные значения. Во втором случае наши предсказания будут намного сильнее отличаться от реальных, чем в первом, соответственно показатель метрики и функция ошибки будут хуже. Именно поэтому от выбросов стараются избавляться.
   """)
 
-  st.image('images/outliers.png', use_column_width=True)
+  st.image('../images/outliers.png', use_column_width=True)
   st.write("Давайте построим гистограмму и ящик с усами по целевой переменной, чтобы оценить их наличие.")
 
   show_plots = st.checkbox('Построить графики')  #очень долго строятся графики. Чтобы не ждать, будем показывать скриншот 
@@ -489,7 +492,7 @@ if step_nine:
     # st.plotly_chart(box)
     # st.plotly_chart(hist)
 
-    st.image('images/plots_first.jpg', use_column_width=True)
+    st.image('../images/plots_first.jpg', use_column_width=True)
 
 
     st.write("""
@@ -501,7 +504,7 @@ if step_nine:
       q_low = df_3['длительность_поездки'].quantile(0.005)
       q_hihg = df_3['длительность_поездки'].quantile(0.995)
       df_3 = df_3[(df_3['длительность_поездки'] >= q_low) & (df_3['длительность_поездки'] <= q_hihg)]
-      st.image('images/plots_second.jpg', use_column_width=True)
+      st.image('../images/plots_second.jpg', use_column_width=True)
 
 
 step_ten = st.checkbox('Шаг пятый ')
